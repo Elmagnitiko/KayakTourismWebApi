@@ -1,5 +1,8 @@
 ﻿using KayakTourismWebApi.DataNS;
+using KayakTourismWebApi.DTOsNS;
+using KayakTourismWebApi.MappersNS;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -30,6 +33,16 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             return Ok(theEvent);
+        }
+
+        [HttpPost]
+        //[Authorize(Role="Moderator")]
+        public IActionResult CreateEvent([FromBody] CreateEventDto eventDto)
+        {
+            var createdEvent = eventDto.ToEventFromCreateEventDto();
+            _dbContext.Events.Add(createdEvent);
+            _dbContext.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new {id = createdEvent.Id}, createdEvent);
         }
     }
 }
