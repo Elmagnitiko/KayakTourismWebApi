@@ -1,5 +1,6 @@
 ﻿using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.DTOsNS;
+using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,15 +13,17 @@ namespace KayakTourismWebApi.ControllersNS
     public class EventsController : ControllerBase
     {
         private readonly ApplicationDBContext _dbContext;
-        public EventsController(ApplicationDBContext context)
+        private readonly IEventRepository _eventRepo;
+        public EventsController(ApplicationDBContext context, IEventRepository eventRepo)
         {
             _dbContext = context;
+            _eventRepo = eventRepo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAll()
         {
-            var events = await _dbContext.Events.ToArrayAsync();
+            var events = await _eventRepo.GetAllAsync();
             var eventsDtos = events.Select(e => e.ToEventDto());
 
             return Ok(eventsDtos);

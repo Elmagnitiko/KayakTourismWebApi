@@ -1,3 +1,4 @@
+using KayakTourismWebApi.DatabaseServicesNS;
 using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.ServiceExtensionsNS;
 using Microsoft.EntityFrameworkCore;
@@ -37,4 +38,5 @@ app.Run();
 static void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     services.ConfigureEntityFramework(config);
+    services.RegisterDataAccess();
 }
