@@ -62,5 +62,23 @@ namespace KayakTourismWebApi.ControllersNS
             _dbContext.SaveChanges();
             return Ok(eventModel.ToEventDto());
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        //[Authorize(Role="Moderator")]
+        public IActionResult DeleteEvent([FromRoute] int id)
+        {
+            var eventModel = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            if(null == eventModel)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Events.Remove(eventModel);
+            _dbContext.SaveChanges();
+
+            return NoContent(); 
+        }
+
     }
 }
