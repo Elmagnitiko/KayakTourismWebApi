@@ -30,9 +30,9 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute]int id)
+        public async Task<IActionResult> GetById([FromRoute]int id)
         {
-            var theEvent = await _dbContext.Events.FindAsync(id);
+            var theEvent = await _eventRepo.GetByIdAsync(id);
 
             if (theEvent == null)
             {
@@ -44,29 +44,25 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpPost]
         //[Authorize(Role="Moderator")]
-        public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto)
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto eventDto)
         {
             var createdEvent = eventDto.ToEventFromCreateEventDto();
-            await _dbContext.Events.AddAsync(createdEvent);
-            await _dbContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetByIdAsync), new {id = createdEvent.Id}, createdEvent);
+            await _eventRepo.CreateEventAsync(createdEvent);
+            return CreatedAtAction(nameof(GetById), new {id = createdEvent.Id}, createdEvent);
         }
 
         [HttpPut]
         [Route("{id}")]
         //[Authorize(Role="Moderator")]
-        public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
+        public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
         {
-            var eventModel = await _dbContext.Events
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var eventModel = await _eventRepo.UpdateEventAsync(id, eventDto);
 
             if(eventModel == null)
             {
                 return NotFound();
             }
 
-            eventDto.ToEventFromUpdateDto(eventModel);
-            await _dbContext.SaveChangesAsync();
             return Ok(eventModel.ToEventDto());
         }
 
@@ -75,16 +71,12 @@ namespace KayakTourismWebApi.ControllersNS
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] int id)
         {
-            var eventModel = await _dbContext.Events
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var eventModel = await _eventRepo.DeleteEventAsync(id);
 
             if(null == eventModel)
             {
                 return NotFound();
             }
-
-            _dbContext.Events.Remove(eventModel);
-            await _dbContext.SaveChangesAsync();
 
             return NoContent(); 
         }

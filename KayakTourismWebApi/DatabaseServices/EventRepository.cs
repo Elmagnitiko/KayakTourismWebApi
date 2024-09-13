@@ -1,8 +1,10 @@
 ﻿using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.DTOsNS;
 using KayakTourismWebApi.InterfacesNS;
+using KayakTourismWebApi.MappersNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 
 namespace KayakTourismWebApi.DatabaseServicesNS
 {
@@ -14,14 +16,25 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             _dbContext = context;
         }
 
-        public Task<Event> CreateEventAsync(Event eventModel)
+        public async Task<Event> CreateEventAsync(Event eventModel)
         {
-            throw new NotImplementedException();
+            await _dbContext.Events.AddAsync(eventModel);
+            await _dbContext.SaveChangesAsync();
+            return eventModel;  
         }
 
-        public Task<Event?> DeleteEventAsync(int id)
+        public async Task<Event?> DeleteEventAsync(int id)
         {
-            throw new NotImplementedException();
+            var eventModel = await _dbContext.Events
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (eventModel == null)
+            {
+                return null;
+            }
+            _dbContext.Events.Remove(eventModel);
+            await _dbContext.SaveChangesAsync();
+            return eventModel;
         }
 
         public async Task<Event[]> GetAllAsync()
@@ -29,17 +42,27 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             return await _dbContext.Events.ToArrayAsync();
         }
 
-        public Task<Event?> GetByIdAsync(int id)
+        public async Task<Event?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Events.FindAsync(id);
+        }
+
+        public async Task<Event?> UpdateEventAsync(int id, UpdateEventDto eventModel)
+        {
+            var existingEvent = await _dbContext.Events
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (existingEvent == null) {
+                return null;
+            }
+
+            eventModel.ToEventFromUpdateDto(existingEvent);
+            await _dbContext.SaveChangesAsync();
+
+            return existingEvent;
         }
 
         public Task<bool> IsEventExist(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Event?> UpdateEventAsync(int id, UpdateEventDto eventModel)
         {
             throw new NotImplementedException();
         }

@@ -1,8 +1,4 @@
 using KayakTourismWebApi.DatabaseServicesNS;
-using KayakTourismWebApi.DataNS;
-using KayakTourismWebApi.ServiceExtensionsNS;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
