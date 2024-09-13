@@ -31,6 +31,7 @@ namespace KayakTourismWebApi.MappersNS
         {
             return new EventDto
             {
+                Id = eventModel.Id,
                 Name = eventModel.Name,
                 Description = eventModel.Description,
                 Price = eventModel.Price,

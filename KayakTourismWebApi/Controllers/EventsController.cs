@@ -2,6 +2,7 @@
 using KayakTourismWebApi.DTOsNS;
 using KayakTourismWebApi.MappersNS;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
 namespace KayakTourismWebApi.ControllersNS
@@ -17,16 +18,18 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var events = _dbContext.Events.ToArray();
-            return Ok(events);
+            var events = await _dbContext.Events.ToArrayAsync();
+            var eventsDtos = events.Select(e => e.ToEventDto());
+
+            return Ok(eventsDtos);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute]int id)
+        public async Task<IActionResult> GetByIdAsync([FromRoute]int id)
         {
-            var theEvent = _dbContext.Events.Find(id);
+            var theEvent = await _dbContext.Events.FindAsync(id);
 
             if (theEvent == null)
             {
@@ -38,20 +41,21 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpPost]
         //[Authorize(Role="Moderator")]
-        public IActionResult CreateEvent([FromBody] CreateEventDto eventDto)
+        public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto)
         {
             var createdEvent = eventDto.ToEventFromCreateEventDto();
-            _dbContext.Events.Add(createdEvent);
-            _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new {id = createdEvent.Id}, createdEvent);
+            await _dbContext.Events.AddAsync(createdEvent);
+            await _dbContext.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetByIdAsync), new {id = createdEvent.Id}, createdEvent);
         }
 
         [HttpPut]
         [Route("{id}")]
         //[Authorize(Role="Moderator")]
-        public IActionResult UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
+        public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
         {
-            var eventModel = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            var eventModel = await _dbContext.Events
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if(eventModel == null)
             {
@@ -59,23 +63,25 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             eventDto.ToEventFromUpdateDto(eventModel);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return Ok(eventModel.ToEventDto());
         }
 
         [HttpDelete]
         [Route("{id}")]
         //[Authorize(Role="Moderator")]
-        public IActionResult DeleteEvent([FromRoute] int id)
+        public async Task<IActionResult> DeleteEventAsync([FromRoute] int id)
         {
-            var eventModel = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            var eventModel = await _dbContext.Events
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if(null == eventModel)
             {
                 return NotFound();
             }
 
             _dbContext.Events.Remove(eventModel);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return NoContent(); 
         }
