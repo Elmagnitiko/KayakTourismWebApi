@@ -1,5 +1,6 @@
 ﻿using KayakTourismWebApi.DTOsNS;
 using KayakTourismWebApi.ModelsNS;
+using System.Diagnostics.Eventing.Reader;
 
 namespace KayakTourismWebApi.MappersNS
 {
@@ -14,6 +15,27 @@ namespace KayakTourismWebApi.MappersNS
                 Price = createEventDto.Price,
                 EventStarts = createEventDto.EventStarts,
                 EventEnds = createEventDto.EventEnds,
+            };
+        }
+
+        public static void ToEventFromUpdateDto(this UpdateEventDto updateEventDto, Event eventModel)
+        {
+            eventModel.Name = updateEventDto.Name;
+            eventModel.Description = updateEventDto.Description;
+            eventModel.Price = updateEventDto.Price;
+            eventModel.EventEnds = updateEventDto.EventEnds;
+            eventModel.EventStarts = updateEventDto.EventStarts;
+        }
+
+        public static EventDto ToEventDto(this Event eventModel)
+        {
+            return new EventDto
+            {
+                Name = eventModel.Name,
+                Description = eventModel.Description,
+                Price = eventModel.Price,
+                EventStarts = eventModel.EventStarts,
+                EventEnds = eventModel.EventEnds,
             };
         }
     }

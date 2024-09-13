@@ -27,12 +27,13 @@ namespace KayakTourismWebApi.ControllersNS
         public IActionResult GetById([FromRoute]int id)
         {
             var theEvent = _dbContext.Events.Find(id);
+
             if (theEvent == null)
             {
                 return NotFound();
             }
 
-            return Ok(theEvent);
+            return Ok(theEvent.ToEventDto());
         }
 
         [HttpPost]
@@ -43,6 +44,23 @@ namespace KayakTourismWebApi.ControllersNS
             _dbContext.Events.Add(createdEvent);
             _dbContext.SaveChanges();
             return CreatedAtAction(nameof(GetById), new {id = createdEvent.Id}, createdEvent);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        //[Authorize(Role="Moderator")]
+        public IActionResult UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
+        {
+            var eventModel = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+
+            if(eventModel == null)
+            {
+                return NotFound();
+            }
+
+            eventDto.ToEventFromUpdateDto(eventModel);
+            _dbContext.SaveChanges();
+            return Ok(eventModel.ToEventDto());
         }
     }
 }
