@@ -4,7 +4,6 @@ using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace KayakTourismWebApi.DatabaseServicesNS
 {
@@ -52,7 +51,8 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             var existingEvent = await _dbContext.Events
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if (existingEvent == null) {
+            if (existingEvent == null) 
+            {
                 return null;
             }
 

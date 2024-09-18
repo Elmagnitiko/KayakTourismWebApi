@@ -1,10 +1,7 @@
-﻿using KayakTourismWebApi.DataNS;
-using KayakTourismWebApi.DTOsNS;
+﻿using KayakTourismWebApi.DTOsNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -12,26 +9,35 @@ namespace KayakTourismWebApi.ControllersNS
     [ApiController]
     public class EventsController : ControllerBase
     {
-        private readonly ApplicationDBContext _dbContext;
         private readonly IEventRepository _eventRepo;
-        public EventsController(ApplicationDBContext context, IEventRepository eventRepo)
+        public EventsController(IEventRepository eventRepo)
         {
-            _dbContext = context;
             _eventRepo = eventRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if(!ModelState.IsValid) 
+            {
+                return BadRequest(ModelState); 
+            }
+
             var events = await _eventRepo.GetAllAsync();
+            //null check
             var eventsDtos = events.Select(e => e.ToEventDto());
 
             return Ok(eventsDtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute]int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var theEvent = await _eventRepo.GetByIdAsync(id);
 
             if (theEvent == null)
@@ -46,16 +52,26 @@ namespace KayakTourismWebApi.ControllersNS
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto eventDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var createdEvent = eventDto.ToEventFromCreateEventDto();
             await _eventRepo.CreateEventAsync(createdEvent);
             return CreatedAtAction(nameof(GetById), new {id = createdEvent.Id}, createdEvent);
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var eventModel = await _eventRepo.UpdateEventAsync(id, eventDto);
 
             if(eventModel == null)
@@ -67,10 +83,15 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var eventModel = await _eventRepo.DeleteEventAsync(id);
 
             if(null == eventModel)

@@ -35,4 +35,5 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 {
     services.ConfigureEntityFramework(config);
     services.RegisterDataAccess();
+    services.ConfigureJsonOptions(); //? Проверить в первую очередь
 }
