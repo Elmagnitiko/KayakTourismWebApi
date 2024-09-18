@@ -36,9 +36,14 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             return eventModel;
         }
 
-        public async Task<Event[]> GetAllAsync()
+        public async Task<Event[]> GetAllAsync(QueryObject queryObj)
         {
-            return await _dbContext.Events.ToArrayAsync();
+            var skipNumbers = (queryObj.PageNumber - 1) * queryObj.PageSize;
+
+            return await _dbContext.Events
+                .Skip(skipNumbers)
+                .Take(queryObj.PageSize)
+                .ToArrayAsync();
         }
 
         public async Task<Event?> GetByIdAsync(int id)

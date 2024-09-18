@@ -5,7 +5,7 @@ namespace KayakTourismWebApi.InterfacesNS
 {
     public interface IEventRepository
     {
-        Task<Event[]> GetAllAsync();
+        Task<Event[]> GetAllAsync(QueryObject queryObj);
         Task<Event?> GetByIdAsync(int id);
         Task<Event> CreateEventAsync(Event eventModel);
         Task<Event?> UpdateEventAsync(int id, UpdateEventDto eventModel);

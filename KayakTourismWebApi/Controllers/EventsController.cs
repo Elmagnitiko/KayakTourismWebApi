@@ -1,6 +1,7 @@
 ﻿using KayakTourismWebApi.DTOsNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
+using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KayakTourismWebApi.ControllersNS
@@ -15,15 +16,15 @@ namespace KayakTourismWebApi.ControllersNS
             _eventRepo = eventRepo;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject queryObj)
         {
             if(!ModelState.IsValid) 
             {
                 return BadRequest(ModelState); 
             }
 
-            var events = await _eventRepo.GetAllAsync();
+            var events = await _eventRepo.GetAllAsync(queryObj);
             //null check
             var eventsDtos = events.Select(e => e.ToEventDto());
 
