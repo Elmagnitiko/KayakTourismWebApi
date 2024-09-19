@@ -2,7 +2,7 @@
 
 namespace KayakTourismWebApi.ModelsNS
 {
-    public class User : IdentityUser
+    public class Customer : IdentityUser
     {
         
     }

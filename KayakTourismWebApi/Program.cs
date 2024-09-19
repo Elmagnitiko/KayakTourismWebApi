@@ -1,4 +1,5 @@
 using KayakTourismWebApi.DatabaseServicesNS;
+using KayakTourismWebApi.ServiceExtensionsNS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,13 +10,7 @@ builder.Services.AddSwaggerGen();
 
 ConfigureServices(builder.Services, builder.Configuration);
 
-//builder.Services.AddDbContext<ApplicationDBContext>(options =>
-//{
-//    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-//});
-
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -25,6 +20,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -36,4 +32,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.ConfigureEntityFramework(config);
     services.RegisterDataAccess();
     services.ConfigureJsonOptions(); //? Проверить в первую очередь
+    services.ConfigureIdentity();
+    services.ConfigureJwtAuthentication(config);
 }

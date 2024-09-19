@@ -25,12 +25,6 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             services.AddScoped<IEventRepository, EventRepository>();
         }
 
-        public static void ConfigureJsonOptions(this IServiceCollection services) 
-        {
-            services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            }); 
-        }
+        
     }
 }
