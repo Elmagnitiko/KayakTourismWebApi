@@ -41,6 +41,7 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             var skipNumbers = (queryObj.PageNumber - 1) * queryObj.PageSize;
 
             return await _dbContext.Events
+                .OrderBy(e => e.EventStarts)
                 .Skip(skipNumbers)
                 .Take(queryObj.PageSize)
                 .ToArrayAsync();
