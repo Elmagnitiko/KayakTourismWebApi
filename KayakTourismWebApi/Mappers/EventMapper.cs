@@ -1,4 +1,4 @@
-﻿using KayakTourismWebApi.DTOsNS;
+﻿using KayakTourismWebApi.DTOs.Event;
 using KayakTourismWebApi.ModelsNS;
 using System.Diagnostics.Eventing.Reader;
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KayakTourismWebApi.DTOsNS
+namespace KayakTourismWebApi.DTOs.Event
 {
     public class CreateEventDto
     {

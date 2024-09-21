@@ -1,5 +1,7 @@
 ﻿using KayakTourismWebApi.DataNS;
+using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
+using KayakTourismWebApi.TokenServiceNS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +18,7 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 16;
+                options.Password.RequiredLength = 12;
 
             }).AddEntityFrameworkStores<ApplicationDBContext>();
         }
@@ -33,10 +35,11 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                         ValidateAudience = true,
                         ValidAudience = configuration["JWT:Audience"],
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
                     };
                 });
+
+            services.AddAuthorization();
         }
 
         public static void ConfigureJsonOptions(this IServiceCollection services)
@@ -46,5 +49,11 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
         }
+
+        public static void ConfigureTokenService(this IServiceCollection services)
+        {
+            services.AddScoped<ITokenService, TokenService>();
+        }
+
     }
 }

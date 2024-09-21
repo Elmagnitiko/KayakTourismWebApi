@@ -34,4 +34,5 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.ConfigureJsonOptions(); //? Проверить в первую очередь
     services.ConfigureIdentity();
     services.ConfigureJwtAuthentication(config);
+    services.ConfigureTokenService();
 }
