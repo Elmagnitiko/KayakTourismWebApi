@@ -31,7 +31,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 {
     services.ConfigureEntityFramework(config);
     services.RegisterDataAccess();
-    services.ConfigureJsonOptions(); //? Проверить в первую очередь
+    services.ConfigureJsonOptions();
     services.ConfigureIdentity();
     services.ConfigureJwtAuthentication(config);
     services.ConfigureTokenService();
