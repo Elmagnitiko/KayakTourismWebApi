@@ -35,4 +35,5 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.ConfigureIdentity();
     services.ConfigureJwtAuthentication(config);
     services.ConfigureTokenService();
+    services.ConfigureEmailSender(config);
 }

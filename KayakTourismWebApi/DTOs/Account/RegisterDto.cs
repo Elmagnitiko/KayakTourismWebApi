@@ -4,8 +4,8 @@ namespace KayakTourismWebApi.DTOs.AccountNS
 {
     public class RegisterDto
     {
-        [Required]
-        public string Username { get; set; }
+        //[Required]
+        //public string Username { get; set; }
 
         [Required]
         [EmailAddress]

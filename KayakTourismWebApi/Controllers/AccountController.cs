@@ -1,12 +1,14 @@
-﻿using KayakTourismWebApi.DTOs.Account;
+﻿using KayakTourismWebApi.Controllers;
+using KayakTourismWebApi.DTOs.Account;
 using KayakTourismWebApi.DTOs.AccountNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
+using KayakTourismWebApi.ViewModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -17,16 +19,21 @@ namespace KayakTourismWebApi.ControllersNS
         private readonly UserManager<Customer> _userManager;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<Customer> _signInManager;
-        public AccountController(UserManager<Customer> userManager, ITokenService tokenService, SignInManager<Customer> signInManager)
+        private readonly IEmailSender _emailSender;
+        public AccountController(UserManager<Customer> userManager, 
+            ITokenService tokenService, 
+            SignInManager<Customer> signInManager,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             try
             {
@@ -37,28 +44,28 @@ namespace KayakTourismWebApi.ControllersNS
 
                 var customer = new Customer
                 {
-                    UserName = registerDto.Username,
-                    Email = registerDto.Email,
-                    PhoneNumber = registerDto.PhoneNumder,
+                    UserName = model.Email,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumder,
                 };
 
-                var createdCustomer = await _userManager.CreateAsync(customer, registerDto.Password);
+                var createdCustomer = await _userManager.CreateAsync(customer, model.Password);
 
                 if(createdCustomer.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(customer, Constants.CustomerRole);
-                    if(roleResult.Succeeded)
-                    {
-                        return Ok(new NewCustomerDto
-                        {
-                            Username = customer.UserName,
-                            Email = customer.Email,
-                            PhoneNumber = customer.PhoneNumber,
-                            Token = _tokenService.CreateToken(customer)
-                        });
-                    }
-                    
-                    return StatusCode(500, roleResult.Errors);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
+
+                    var callbackUrl = Url.Action(
+                        nameof(ConfirmEmail),
+                        "Account",
+                        new { userId = customer.Id, code },
+                        protocol: HttpContext.Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                        $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+
+                    return Ok(new { Message = "Please, check your email to finish account creating" });
                 }
 
                 return StatusCode(500, createdCustomer.Errors);
@@ -97,6 +104,42 @@ namespace KayakTourismWebApi.ControllersNS
                 PhoneNumber = customer.PhoneNumber,
                 Token = _tokenService.CreateToken(customer)
             });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return BadRequest("Email confirmation error.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"Can not find a user with ID '{userId}'.");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                return Ok("Email is confirmed.");
+            }
+
+            return StatusCode(500, "Email confirmation error.");
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
         }
     }
 }

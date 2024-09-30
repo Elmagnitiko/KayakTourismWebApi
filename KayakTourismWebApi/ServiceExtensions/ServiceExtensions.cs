@@ -1,9 +1,11 @@
 ﻿using KayakTourismWebApi.DataNS;
+using KayakTourismWebApi.HelpersNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
 using KayakTourismWebApi.TokenServiceNS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace KayakTourismWebApi.ServiceExtensionsNS
@@ -18,27 +20,41 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 12;
+                options.Password.RequiredLength = 10;
                 options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
 
-            }).AddEntityFrameworkStores<ApplicationDBContext>();
+            })
+            .AddTokenProvider<DataProtectorTokenProvider<Customer>>("Default")
+            .AddTokenProvider<EmailTokenProvider<Customer>>("Email")
+            .AddTokenProvider<PhoneNumberTokenProvider<Customer>>("Phone")
+            .AddEntityFrameworkStores<ApplicationDBContext>();
         }
 
         public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                options.DefaultChallengeScheme =
+                options.DefaultForbidScheme =
+                options.DefaultScheme =
+                options.DefaultSignInScheme =
+                options.DefaultSignOutScheme = 
+                JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = configuration["JWT:Issuer"],
-                        ValidateAudience = true,
-                        ValidAudience = configuration["JWT:Audience"],
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["JWT:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JWT:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
+                };
+            });
 
             services.AddAuthorization();
         }
@@ -54,6 +70,17 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
         public static void ConfigureTokenService(this IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
+        }
+
+        public static void ConfigureEmailSender(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IEmailSender, EmailSender>(provider =>
+                new EmailSender(
+                    configuration["EmailSettings:SmtpServer"],
+                    int.Parse(configuration["EmailSettings:SmtpPort"]),
+                    configuration["EmailSettings:SmtpUser"],
+                    configuration["EmailSettings:SmtpPass"]
+                ));
         }
 
     }
