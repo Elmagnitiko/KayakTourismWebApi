@@ -111,7 +111,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        //[ValidateAntiForgeryToken] 
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -120,20 +120,20 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpGet("confirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string customerId, string code)
         {
-            if (userId == null || code == null)
+            if (customerId == null || code == null)
             {
                 return BadRequest("Email confirmation error.");
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            var customer = await _userManager.FindByIdAsync(customerId);
+            if (customer == null)
             {
-                return NotFound($"Can not find a user with ID '{userId}'.");
+                return NotFound($"Can not find a user with ID '{customerId}'.");
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            var result = await _userManager.ConfirmEmailAsync(customer, code);
             if (result.Succeeded)
             {
                 return Ok("Email is confirmed.");

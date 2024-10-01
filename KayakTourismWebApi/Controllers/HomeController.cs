@@ -19,7 +19,7 @@ namespace KayakTourismWebApi.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser != null)
             {
-                return RedirectToAction(nameof(EventsController.GetAll), "Todos");
+                return RedirectToAction(nameof(EventsController.GetAll), "Events");
             }
             ViewData["Title"] = "Home";
             return View();
