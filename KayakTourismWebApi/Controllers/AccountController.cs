@@ -3,7 +3,6 @@ using KayakTourismWebApi.DTOs.Account;
 using KayakTourismWebApi.DTOs.AccountNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
-using KayakTourismWebApi.ViewModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -33,7 +32,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterDto model)
         {
             try
             {
@@ -54,18 +53,23 @@ namespace KayakTourismWebApi.ControllersNS
                 if(createdCustomer.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(customer, Constants.CustomerRole);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
 
-                    var callbackUrl = Url.Action(
-                        nameof(ConfirmEmail),
-                        "Account",
-                        new { userId = customer.Id, code },
-                        protocol: HttpContext.Request.Scheme);
+                    if(roleResult.Succeeded)
+                    {
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+                        var callbackUrl = Url.Action(
+                            nameof(ConfirmEmail),
+                            "Account",
+                            new { userId = customer.Id, code },
+                            protocol: HttpContext.Request.Scheme);
 
-                    return Ok(new { Message = "Please, check your email to finish account creating" });
+                        await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                            $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+
+                        return Ok(new { Message = "Please, check your email to finish account creating" });
+                    }
+                    return StatusCode(500, roleResult.Errors);
                 }
 
                 return StatusCode(500, createdCustomer.Errors);
@@ -104,6 +108,14 @@ namespace KayakTourismWebApi.ControllersNS
                 PhoneNumber = customer.PhoneNumber,
                 Token = _tokenService.CreateToken(customer)
             });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] 
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         [AllowAnonymous]
