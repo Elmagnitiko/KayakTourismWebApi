@@ -3,7 +3,7 @@ using KayakTourismWebApi.InterfacesNS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace KayakTourismWebApi.DatabaseServicesNS
+namespace KayakTourismWebApi.DatabaseServices
 {
     public static class DataAccessService
     {
@@ -25,6 +25,6 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             services.AddScoped<IEventRepository, EventRepository>();
         }
 
-        
+
     }
 }

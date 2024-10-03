@@ -5,7 +5,7 @@ using KayakTourismWebApi.MappersNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.EntityFrameworkCore;
 
-namespace KayakTourismWebApi.DatabaseServicesNS
+namespace KayakTourismWebApi.DatabaseServices
 {
     public class EventRepository : IEventRepository
     {
@@ -19,7 +19,7 @@ namespace KayakTourismWebApi.DatabaseServicesNS
         {
             await _dbContext.Events.AddAsync(eventModel);
             await _dbContext.SaveChangesAsync();
-            return eventModel;  
+            return eventModel;
         }
 
         public async Task<Event?> DeleteEventAsync(int id)
@@ -57,7 +57,7 @@ namespace KayakTourismWebApi.DatabaseServicesNS
             var existingEvent = await _dbContext.Events
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if (existingEvent == null) 
+            if (existingEvent == null)
             {
                 return null;
             }

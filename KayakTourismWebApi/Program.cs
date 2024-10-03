@@ -1,4 +1,4 @@
-using KayakTourismWebApi.DatabaseServicesNS;
+using KayakTourismWebApi.DatabaseServices;
 using KayakTourismWebApi.ServiceExtensionsNS;
 
 var builder = WebApplication.CreateBuilder(args);
