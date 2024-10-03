@@ -3,7 +3,6 @@ using KayakTourismWebApi.DTOs.Account;
 using KayakTourismWebApi.DTOs.AccountNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
-using KayakTourismWebApi.ViewModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -33,7 +32,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterDto model)
         {
             try
             {
