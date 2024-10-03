@@ -53,18 +53,22 @@ namespace KayakTourismWebApi.ControllersNS
                 if(createdCustomer.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(customer, Constants.CustomerRole);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
 
-                    var callbackUrl = Url.Action(
-                        nameof(ConfirmEmail),
-                        "Account",
-                        new { userId = customer.Id, code },
-                        protocol: HttpContext.Request.Scheme);
+                    if (roleResult.Succeeded)
+                    {
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+                        var callbackUrl = Url.Action(
+                            nameof(ConfirmEmail),
+                            "Account",
+                            new { userId = customer.Id, code },
+                            protocol: HttpContext.Request.Scheme);
 
-                    return Ok(new { Message = "Please, check your email to finish account creating" });
+                        await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                            $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+                    }
+
+                        return Ok(new { Message = "Please, check your email to finish account creating" });
                 }
 
                 return StatusCode(500, createdCustomer.Errors);
