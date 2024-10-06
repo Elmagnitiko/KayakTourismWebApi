@@ -46,6 +46,7 @@ namespace KayakTourismWebApi.ControllersNS
                     UserName = model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumder,
+                    TwoFactorEnabled = true,
                 };
 
                 var createdCustomer = await _userManager.CreateAsync(customer, model.Password);
@@ -66,9 +67,10 @@ namespace KayakTourismWebApi.ControllersNS
 
                         await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
                             $"Please, confirm your email by clicking this link: \n{callbackUrl}");
+                        return Ok(new { Message = "Please, check your email to finish account creating" });
                     }
 
-                        return Ok(new { Message = "Please, check your email to finish account creating" });
+                    return StatusCode(500, roleResult.Errors);  
                 }
 
                 return StatusCode(500, createdCustomer.Errors);
