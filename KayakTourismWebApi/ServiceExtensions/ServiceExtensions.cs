@@ -35,12 +35,12 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
         {
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme =
+                //options.DefaultAuthenticateScheme =
                 options.DefaultChallengeScheme =
                 options.DefaultForbidScheme =
                 options.DefaultScheme =
                 options.DefaultSignInScheme =
-                options.DefaultSignOutScheme = 
+                options.DefaultSignOutScheme =
                 JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>

@@ -111,6 +111,113 @@ namespace KayakTourismWebApi.ControllersNS
             });
         }
 
+        [HttpPost("login2fa")]
+        public async Task<IActionResult> Login2fa([FromBody] LoginDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                return Unauthorized("Invalid email or password.");
+            }
+
+            await _signInManager.SignOutAsync();
+            await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent:true , lockoutOnFailure: false);
+
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}");
+
+            return Ok("Code sent to email.");
+        }
+
+        [HttpPost("verify2faCode")]
+        public async Task<IActionResult> Verify2faCode([FromBody] VerifyCodeDto model)
+        {
+            await _signInManager.SignOutAsync();
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return Unauthorized("Invalid email.");
+            }
+
+            var result = await _signInManager.TwoFactorSignInAsync("Email", model.Code, false, false);
+            if (result.Succeeded)
+            {
+                return Ok("Authentication successful.");
+            }
+            else
+            {
+                return Unauthorized("Invalid authentication code.");
+            }
+        }
+
+        //[AllowAnonymous]
+        //[HttpPost("login2fa")]
+        //public async Task<IActionResult> LoginWith2FA([FromBody] LoginDto loginDto)
+        //{
+        //    if (!ModelState.IsValid || loginDto == null)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var customer = await _userManager.Users.FirstOrDefaultAsync(c => c.Email == loginDto.Email.ToLower());
+        //    if (customer == null)
+        //    {
+        //        return Unauthorized("Invalid email or password");
+        //    }
+
+        //    var result = await _signInManager.CheckPasswordSignInAsync(customer, loginDto.Password, lockoutOnFailure: false);
+        //    if (!result.Succeeded)
+        //    {
+        //        return Unauthorized("Email or password is not correct");
+        //    }
+
+        //    if (customer.TwoFactorEnabled)
+        //    {
+        //        var code = await _userManager.GenerateTwoFactorTokenAsync(customer, "Email");
+        //        await _emailSender.SendEmailAsync(
+        //            customer.Email,
+        //            "Two factor authentication",
+        //            $"Your two factor authentication key: \n\n{code}");
+        //    }
+
+        //    return Ok("The code was sent to the email.");
+        //}
+
+        //[AllowAnonymous]
+        //[HttpPost("verify2FACode")]
+        //public async Task<IActionResult> Verify2FACode([FromBody]LoginWith2FACodeDto loginDto)
+        //{
+        //    if (!ModelState.IsValid || loginDto == null)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var customer = await _userManager.Users.FirstOrDefaultAsync(c => c.Email == loginDto.Email.ToLower());
+        //    if (customer == null)
+        //    {
+        //        return Unauthorized("Invalid email or password");
+        //    }
+
+        //    var result = await _signInManager.CheckPasswordSignInAsync(customer, loginDto.Password, lockoutOnFailure: false);
+        //    if (!result.Succeeded)
+        //    {
+        //        return Unauthorized("Email or password is not correct");
+        //    }
+
+        //    var twoFactorSignInResult = await _signInManager.TwoFactorSignInAsync("Email",
+        //        loginDto.TwoFactorCode.Replace(" ", "").Replace("-", ""),
+        //        loginDto.RememberMe,
+        //        loginDto.RememberMachine);
+
+        //    if (!twoFactorSignInResult.Succeeded)
+        //    {
+        //        return Unauthorized("Invalid two factor authentivation code.");
+
+        //    }
+
+        //    return Ok($"User {customer.Email} is loged in");
+        //}
+
         [AllowAnonymous]
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
