@@ -135,7 +135,7 @@ namespace KayakTourismWebApi.ControllersNS
             return Ok("Code sent to email.");
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("verify2faCode")]
         public async Task<IActionResult> Verify2faCode([FromBody] VerifyCodeDto model)
         {
@@ -155,24 +155,20 @@ namespace KayakTourismWebApi.ControllersNS
             var storedCode = _twoFactorAuthServ.GetToken(user.Id);
             if(storedCode == model.Code)
             {
-                if(!await _userManager.CheckPasswordAsync(user, model.Password))
+                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                if (!result.Succeeded)
                 {
-                    return Unauthorized("Invalid email or password.");
-                }
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: true, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _twoFactorAuthServ.InvalidateToken(user.Id);
-                    return Ok(new NewCustomerDto
-                    {
-                        Username = user.UserName,
-                        Email = user.Email,
-                        PhoneNumber = user.PhoneNumber,
-                        Token = _tokenService.CreateToken(user)
-                    });
+                    return Unauthorized("Username or password is not correct");
                 }
 
-                return Unauthorized("Something went wrong");
+                _twoFactorAuthServ.InvalidateToken(user.Id);
+                return Ok(new NewCustomerDto
+                {
+                    Username = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Token = _tokenService.CreateToken(user)
+                });
             }
 
             return Unauthorized("Invalid authentication code.");
