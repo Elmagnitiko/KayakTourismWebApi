@@ -7,6 +7,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache(); // delete this
 
 ConfigureServices(builder.Services, builder.Configuration);
 
@@ -36,4 +37,5 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.ConfigureJwtAuthentication(config);
     services.ConfigureTokenService();
     services.ConfigureEmailSender(config);
+    services.ConfigureTwoFactorAuthenticationService();
 }

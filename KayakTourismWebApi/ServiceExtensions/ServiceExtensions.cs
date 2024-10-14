@@ -27,7 +27,8 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
             })
             .AddTokenProvider<DataProtectorTokenProvider<Customer>>("Default")
             .AddTokenProvider<EmailTokenProvider<Customer>>("Email")
-            .AddTokenProvider<PhoneNumberTokenProvider<Customer>>("Phone")
+            .AddDefaultTokenProviders()
+            //.AddTokenProvider<PhoneNumberTokenProvider<Customer>>("Phone")
             .AddEntityFrameworkStores<ApplicationDBContext>();
         }
 
@@ -35,7 +36,7 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
         {
             services.AddAuthentication(options =>
             {
-                //options.DefaultAuthenticateScheme =
+                options.DefaultAuthenticateScheme =
                 options.DefaultChallengeScheme =
                 options.DefaultForbidScheme =
                 options.DefaultScheme =
@@ -83,5 +84,9 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                 ));
         }
 
+        public static void ConfigureTwoFactorAuthenticationService(this IServiceCollection services)
+        {
+            services.AddTransient<ITwoFactorAuthenticationService, TwoFactorAuthenticationService>();
+        }
     }
 }

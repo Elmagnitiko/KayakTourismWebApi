@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -19,15 +20,19 @@ namespace KayakTourismWebApi.ControllersNS
         private readonly ITokenService _tokenService;
         private readonly SignInManager<Customer> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ITwoFactorAuthenticationService _twoFactorAuthServ;
+
         public AccountController(UserManager<Customer> userManager, 
             ITokenService tokenService, 
             SignInManager<Customer> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ITwoFactorAuthenticationService twoFactorAuthService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _twoFactorAuthServ = twoFactorAuthService;
         }
 
         [AllowAnonymous]
@@ -121,102 +126,57 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             await _signInManager.SignOutAsync();
-            await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent:true , lockoutOnFailure: false);
+            
 
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
             await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}");
+            _twoFactorAuthServ.SaveToken(user.Id, code);
 
             return Ok("Code sent to email.");
         }
 
+        [AllowAnonymous]
         [HttpPost("verify2faCode")]
         public async Task<IActionResult> Verify2faCode([FromBody] VerifyCodeDto model)
         {
+            if (!ModelState.IsValid || model == null)
+            {
+                return BadRequest(ModelState);
+            }
+
             await _signInManager.SignOutAsync();
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return Unauthorized("Invalid email.");
             }
 
-            var result = await _signInManager.TwoFactorSignInAsync("Email", model.Code, false, false);
-            if (result.Succeeded)
+            var storedCode = _twoFactorAuthServ.GetToken(user.Id);
+            if(storedCode == model.Code)
             {
-                return Ok("Authentication successful.");
+                if(!await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: true, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    _twoFactorAuthServ.InvalidateToken(user.Id);
+                    return Ok(new NewCustomerDto
+                    {
+                        Username = user.UserName,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        Token = _tokenService.CreateToken(user)
+                    });
+                }
+
+                return Unauthorized("Something went wrong");
             }
-            else
-            {
-                return Unauthorized("Invalid authentication code.");
-            }
+
+            return Unauthorized("Invalid authentication code.");
         }
-
-        //[AllowAnonymous]
-        //[HttpPost("login2fa")]
-        //public async Task<IActionResult> LoginWith2FA([FromBody] LoginDto loginDto)
-        //{
-        //    if (!ModelState.IsValid || loginDto == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var customer = await _userManager.Users.FirstOrDefaultAsync(c => c.Email == loginDto.Email.ToLower());
-        //    if (customer == null)
-        //    {
-        //        return Unauthorized("Invalid email or password");
-        //    }
-
-        //    var result = await _signInManager.CheckPasswordSignInAsync(customer, loginDto.Password, lockoutOnFailure: false);
-        //    if (!result.Succeeded)
-        //    {
-        //        return Unauthorized("Email or password is not correct");
-        //    }
-
-        //    if (customer.TwoFactorEnabled)
-        //    {
-        //        var code = await _userManager.GenerateTwoFactorTokenAsync(customer, "Email");
-        //        await _emailSender.SendEmailAsync(
-        //            customer.Email,
-        //            "Two factor authentication",
-        //            $"Your two factor authentication key: \n\n{code}");
-        //    }
-
-        //    return Ok("The code was sent to the email.");
-        //}
-
-        //[AllowAnonymous]
-        //[HttpPost("verify2FACode")]
-        //public async Task<IActionResult> Verify2FACode([FromBody]LoginWith2FACodeDto loginDto)
-        //{
-        //    if (!ModelState.IsValid || loginDto == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var customer = await _userManager.Users.FirstOrDefaultAsync(c => c.Email == loginDto.Email.ToLower());
-        //    if (customer == null)
-        //    {
-        //        return Unauthorized("Invalid email or password");
-        //    }
-
-        //    var result = await _signInManager.CheckPasswordSignInAsync(customer, loginDto.Password, lockoutOnFailure: false);
-        //    if (!result.Succeeded)
-        //    {
-        //        return Unauthorized("Email or password is not correct");
-        //    }
-
-        //    var twoFactorSignInResult = await _signInManager.TwoFactorSignInAsync("Email",
-        //        loginDto.TwoFactorCode.Replace(" ", "").Replace("-", ""),
-        //        loginDto.RememberMe,
-        //        loginDto.RememberMachine);
-
-        //    if (!twoFactorSignInResult.Succeeded)
-        //    {
-        //        return Unauthorized("Invalid two factor authentivation code.");
-
-        //    }
-
-        //    return Ok($"User {customer.Email} is loged in");
-        //}
 
         [AllowAnonymous]
         [HttpGet("confirmEmail")]
