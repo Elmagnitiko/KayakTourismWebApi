@@ -50,6 +50,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost]
+        //[ValidateAntiForgeryToken]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto eventDto)
         {
@@ -65,6 +66,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpPut]
         [Route("{id:int}")]
+        //[ValidateAntiForgeryToken]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
         {
@@ -85,6 +87,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpDelete]
         [Route("{id:int}")]
+        //[ValidateAntiForgeryToken]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] int id)
         {

@@ -21,7 +21,7 @@ namespace KayakTourismWebApi.HelpersNS
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("evzhuroff@gmail.com", _smtpUser));
+            emailMessage.From.Add(new MailboxAddress("Kayak tourism in Belarus", _smtpUser));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart("plain") { Text = htmlMessage };
