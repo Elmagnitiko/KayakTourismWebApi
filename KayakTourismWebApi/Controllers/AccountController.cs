@@ -174,6 +174,27 @@ namespace KayakTourismWebApi.ControllersNS
             return Unauthorized("Invalid authentication code.");
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                try
+                {
+                    await _signInManager.SignOutAsync();
+                    return Ok("Logged out successfully.");
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
+            }
+            else
+            {
+                return BadRequest("User is not logged in.");
+            }
+        }
+
         [AllowAnonymous]
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
