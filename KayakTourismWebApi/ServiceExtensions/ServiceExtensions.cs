@@ -88,5 +88,11 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
         {
             services.AddTransient<ITwoFactorAuthenticationService, TwoFactorAuthenticationService>();
         }
+
+        //public static void ConfigureSecurity(this IServiceCollection services)
+        //{
+        //    // Angular's default header name for sending the XSRF token.
+        //    services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+        //}
     }
 }

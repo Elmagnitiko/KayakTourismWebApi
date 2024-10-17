@@ -197,7 +197,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpGet("confirmEmail")]
-        private async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
