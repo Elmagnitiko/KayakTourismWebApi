@@ -35,8 +35,8 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = await _userManager.GetUserAsync(User);
-            if(customer == null)
+            var customer = await _userManager.FindByIdAsync(model.CustomerId);
+            if (customer == null)
             {
                 return Unauthorized("First, log in to your account");
             }
@@ -50,21 +50,6 @@ namespace KayakTourismWebApi.Controllers
             }
             
             return BadRequest("Something went wrong");
-
-            //var user = await _userManager.FindByIdAsync(model.CustomerId);
-            //if(user == null)
-            //{
-            //    BadRequest("lenin grib");
-            //}
-
-            //var passwordChangingResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
-            //if (passwordChangingResult.Succeeded)
-            //{
-            //    return Ok("password is changed");
-            //}
-
-            //return BadRequest("something is wrong");
         }
 
         [Authorize]
@@ -76,7 +61,8 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = await _userManager.GetUserAsync(User);
+            var customer = await _userManager.FindByIdAsync(model.Id);
+            
             if (customer == null)
             {
                 return Unauthorized("First, log in to your account");
@@ -99,10 +85,10 @@ namespace KayakTourismWebApi.Controllers
                 "Confirm your new email",
                 $"Please, confirm your new email by clicking this link: \n{callbackUrl}");
 
-            return Ok(new { Message = "Please, check your email to finish account creating" });
+            return Ok(new { Message = "Please, check your email to confirm new email." });
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("confirmNewEmail")]
         public async Task<IActionResult> ConfirmNewEmail(string userId, string token, string newEmail)
         {
@@ -118,6 +104,9 @@ namespace KayakTourismWebApi.Controllers
             }
 
             var result = await _userManager.ChangeEmailAsync(customer, newEmail, token);
+            customer.UserName = newEmail;
+            _ = await _userManager.UpdateAsync(customer);
+
             if (result.Succeeded)
             {
                 return Ok("New email has set.");

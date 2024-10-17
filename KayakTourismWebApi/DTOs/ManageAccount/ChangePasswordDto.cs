@@ -20,6 +20,6 @@ namespace KayakTourismWebApi.DTOs.ManageAccountNS
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string? ConfirmPassword { get; set; }
 
-        //public string CustomerId { get; set; }
+        public string? CustomerId { get; set; }
     }
 }
