@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
@@ -219,16 +220,68 @@ namespace KayakTourismWebApi.ControllersNS
             return StatusCode(500, "Email confirmation error.");
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        [HttpPost("forgotPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordDto model)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (!ModelState.IsValid)
             {
-                return Redirect(returnUrl);
+                return BadRequest(ModelState);
             }
-            else
+            
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return NotFound("User with this email doesn't exist.");
             }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var callbackUrl = Url.Action(
+                nameof(AccountController.ResetPassword),
+                "Account",
+                new { token = token, email = model.Email },
+                protocol : HttpContext.Request.Scheme
+            );
+
+            await _emailSender.SendEmailAsync(
+                model.Email, 
+                "Reset Password",
+                $"Please reset your password by clicking here: {callbackUrl}");
+
+            return Ok("the password reset confirmation link is sent to email");
+        }
+
+        [HttpGet("resetPassword")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordDto { Token = token, Email = email };
+            return Ok(new
+            {
+                model
+            });
+        }
+
+        [HttpPost("resetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (resetPasswordResult.Succeeded)
+            {
+                return Ok("Password has been changed");
+            }
+            return BadRequest(resetPasswordResult.Errors);
         }
     }
 }
