@@ -2,7 +2,7 @@
 
 namespace KayakTourismWebApi.DTOs.Account
 {
-    public class VerifyCodeDto
+    public class Verify2FACodeDto
     {
         [Required]
         public string Email { get; set; }

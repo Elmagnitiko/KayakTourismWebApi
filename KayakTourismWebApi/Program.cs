@@ -42,7 +42,7 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddMemoryCache(); // delete this
+builder.Services.AddMemoryCache(); // move to the services extensions
 
 ConfigureServices(builder.Services, builder.Configuration);
 

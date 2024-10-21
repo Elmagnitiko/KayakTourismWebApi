@@ -138,7 +138,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         //[AllowAnonymous]
         [HttpPost("verify2faCode")]
-        public async Task<IActionResult> Verify2faCode([FromBody] VerifyCodeDto model)
+        public async Task<IActionResult> Verify2faCode([FromBody] Verify2FACodeDto model)
         {
             if (!ModelState.IsValid || model == null)
             {
