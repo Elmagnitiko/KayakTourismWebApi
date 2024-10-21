@@ -27,6 +27,5 @@ namespace KayakTourismWebApi.HelpersNS
         {
             _cache.Remove(userId);
         }
-
     }
 }

@@ -16,15 +16,11 @@ namespace KayakTourismWebApi.DatabaseServices
             {
                 options.UseSqlite(connectionStringBuilder);
             });
-
-            //logger.LogInformation("Configured EF.");
         }
 
         public static void RegisterDataAccess(this IServiceCollection services)
         {
             services.AddScoped<IEventRepository, EventRepository>();
         }
-
-
     }
 }

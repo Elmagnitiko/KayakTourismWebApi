@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -120,6 +121,11 @@ namespace KayakTourismWebApi.ControllersNS
         [HttpPost("login2fa")]
         public async Task<IActionResult> Login2fa([FromBody] LoginDto model)
         {
+            if (!ModelState.IsValid || model == null)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -127,16 +133,15 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             await _signInManager.SignOutAsync();
+            await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent:true, lockoutOnFailure:false);
             
-
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}");
-            _twoFactorAuthServ.SaveToken(user.Id, code);
+            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}"); 
 
             return Ok("Code sent to email.");
         }
 
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost("verify2faCode")]
         public async Task<IActionResult> Verify2faCode([FromBody] Verify2FACodeDto model)
         {
@@ -145,34 +150,25 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            await _signInManager.SignOutAsync();
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+            var customer = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (customer == null)
             {
-                return Unauthorized("Invalid email.");
+                return NotFound("Unable to load two-factor authentication user.");
             }
 
-            var storedCode = _twoFactorAuthServ.GetToken(user.Id);
-            if(storedCode == model.Code)
+            var result = await _signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent:true, rememberClient:false);
+            if (!result.Succeeded)
             {
-                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
-                if (!result.Succeeded)
-                {
-                    return Unauthorized("Username or password is not correct");
-                }
-
-                _twoFactorAuthServ.InvalidateToken(user.Id);
-                return Ok(new NewCustomerDto
-                {
-                    Username = user.UserName,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    Token = _tokenService.CreateToken(user)
-                });
+                return Unauthorized("Invalid authentication code.");
             }
 
-            return Unauthorized("Invalid authentication code.");
+            return Ok(new NewCustomerDto
+            {
+                Username = customer.UserName,
+                Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber,
+                Token = _tokenService.CreateToken(customer)
+            });
         }
 
         [HttpPost("logout")]

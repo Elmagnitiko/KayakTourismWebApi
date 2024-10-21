@@ -9,6 +9,6 @@ namespace KayakTourismWebApi.DTOs.ManageAccount
         [Display(Name = "Email")]
         public string? Email { get; set; }
 
-        public string Id { get; set; }
+        public string? Id { get; set; }
     }
 }

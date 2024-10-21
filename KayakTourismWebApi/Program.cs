@@ -5,11 +5,6 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddControllersWithViews(options =>
-//{
-//    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-//});
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
