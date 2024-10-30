@@ -15,7 +15,7 @@ namespace KayakTourismWebApi.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
             modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Customer", b =>
                 {
@@ -97,9 +97,8 @@ namespace KayakTourismWebApi.Migrations
                     b.Property<DateTime>("EventStarts")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IsRegistrationOpened")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("IsRegistrationOpenedInt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -111,6 +110,21 @@ namespace KayakTourismWebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.EventCustomer", b =>
+                {
+                    b.Property<int>("EventId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("EventId", "CustomerId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("EventCustomers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -141,13 +155,13 @@ namespace KayakTourismWebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e7ed7a12-08ed-4e6d-ba39-6bcdf9b2c201",
+                            Id = "7a30c2ff-dbed-4538-b47d-58c808e20017",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
-                            Id = "1e1e0ee5-d0b8-4766-a633-fe204431e7a0",
+                            Id = "b33d62fd-11a6-4a1a-b86c-cc4ac6a8bbfa",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -255,6 +269,25 @@ namespace KayakTourismWebApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.EventCustomer", b =>
+                {
+                    b.HasOne("KayakTourismWebApi.ModelsNS.Customer", "Customer")
+                        .WithMany("EventCustomers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KayakTourismWebApi.ModelsNS.Event", "Event")
+                        .WithMany("EventCustomers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -304,6 +337,16 @@ namespace KayakTourismWebApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Customer", b =>
+                {
+                    b.Navigation("EventCustomers");
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Event", b =>
+                {
+                    b.Navigation("EventCustomers");
                 });
 #pragma warning restore 612, 618
         }

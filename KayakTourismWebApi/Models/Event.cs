@@ -2,7 +2,6 @@
 
 namespace KayakTourismWebApi.ModelsNS
 {
-    //[Table("Events")]
     public class Event
     {
         public int Id { get; set; }
@@ -13,6 +12,16 @@ namespace KayakTourismWebApi.ModelsNS
         public decimal Price { get; set; }
         public DateTime EventStarts { get; set; }
         public DateTime EventEnds { get; set; }
-        public string IsRegistrationOpened { get; set; } = "true";
+
+        [Column(TypeName = "INTEGER")]
+        public int IsRegistrationOpenedInt { get; set; } = 1;
+
+        [NotMapped]
+        public bool IsRegistrationOpened  // or better use this appeoach https://metanit.com/sharp/efcore/2.5.php
+        {
+            get => IsRegistrationOpenedInt == 1;
+            set => IsRegistrationOpenedInt = value ? 1 : 0;
+        }
+        public List<EventCustomer> EventCustomers { get; set; } = new();
     }
 }

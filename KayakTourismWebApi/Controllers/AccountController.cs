@@ -90,7 +90,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto) // do i really need this method? yes - give the option to turn off 2fa or combine them in one method with "if (result.RequiresTwoFactor)"
         {
             if(!ModelState.IsValid || loginDto == null)
             {
@@ -103,7 +103,12 @@ namespace KayakTourismWebApi.ControllersNS
                 return Unauthorized("Invalid email or password");
             }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(customer, loginDto.Password, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(customer, loginDto.Password,isPersistent:true, lockoutOnFailure: false);
+            if (result.RequiresTwoFactor)
+            {
+                return await Login2fa(loginDto);
+            }
+
             if (!result.Succeeded)
             {
                 return Unauthorized("Username or password is not correct");
@@ -136,7 +141,7 @@ namespace KayakTourismWebApi.ControllersNS
             await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent:true, lockoutOnFailure:false);
             
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}"); 
+            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}"); //TODO timer between sending emails
 
             return Ok("Code sent to email.");
         }
@@ -224,7 +229,7 @@ namespace KayakTourismWebApi.ControllersNS
             {
                 return BadRequest(ModelState);
             }
-            
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {

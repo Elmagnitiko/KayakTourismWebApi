@@ -11,7 +11,7 @@ namespace KayakTourismWebApi.DTOs.Event
 
         [Required]
         [MinLength(4, ErrorMessage = "Event description must be over 42 characters long.")]
-        [MaxLength(42, ErrorMessage = "Event name cannot be over 333 characters.")]
+        [MaxLength(333, ErrorMessage = "Event name cannot be over 333 characters.")]
         public string Description { get; set; } = string.Empty;
 
         [Required]

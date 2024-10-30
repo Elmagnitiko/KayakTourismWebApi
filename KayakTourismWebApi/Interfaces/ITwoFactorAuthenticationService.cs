@@ -7,5 +7,7 @@ namespace KayakTourismWebApi.InterfacesNS
         public void SaveToken(string userId, string token);
         public string GetToken(string userId);
         public void InvalidateToken(string userId);
+
+        //TODO do i need this?
     }
 }

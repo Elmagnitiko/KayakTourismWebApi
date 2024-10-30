@@ -13,10 +13,24 @@ namespace KayakTourismWebApi.DataNS
         }
 
         public DbSet<Event> Events { get; set; }
+        public DbSet<EventCustomer> EventCustomers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<EventCustomer>()
+            .HasKey(ec => new { ec.EventId, ec.CustomerId });
+
+            modelBuilder.Entity<EventCustomer>()
+                .HasOne(ec => ec.Event)
+                .WithMany(e => e.EventCustomers)
+                .HasForeignKey(ec => ec.EventId);
+
+            modelBuilder.Entity<EventCustomer>()
+                .HasOne(ec => ec.Customer)
+                .WithMany(c => c.EventCustomers)
+                .HasForeignKey(ec => ec.CustomerId);
 
             var roles = new[]
             {

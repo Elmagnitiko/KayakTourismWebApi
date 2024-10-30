@@ -49,7 +49,7 @@ namespace KayakTourismWebApi.ControllersNS
             return Ok(theEvent.ToEventDto());
         }
 
-        [HttpPost]
+        [HttpPost("createEvent")]
         //[ValidateAntiForgeryToken]
         //[Authorize(Role="Moderator")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto eventDto)
@@ -105,6 +105,8 @@ namespace KayakTourismWebApi.ControllersNS
 
             return NoContent(); 
         }
+
+
 
     }
 }

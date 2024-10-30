@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KayakTourismWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240919171938_Identity")]
-    partial class Identity
+    [Migration("20241023145615_AddIsRegistrationOpenedInt")]
+    partial class AddIsRegistrationOpenedInt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
             modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Customer", b =>
                 {
@@ -100,9 +100,8 @@ namespace KayakTourismWebApi.Migrations
                     b.Property<DateTime>("EventStarts")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IsRegistrationOpened")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("IsRegistrationOpenedInt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -114,6 +113,21 @@ namespace KayakTourismWebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.EventCustomer", b =>
+                {
+                    b.Property<int>("EventId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("EventId", "CustomerId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("EventCustomers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -140,6 +154,20 @@ namespace KayakTourismWebApi.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "7a30c2ff-dbed-4538-b47d-58c808e20017",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "b33d62fd-11a6-4a1a-b86c-cc4ac6a8bbfa",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -244,6 +272,25 @@ namespace KayakTourismWebApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.EventCustomer", b =>
+                {
+                    b.HasOne("KayakTourismWebApi.ModelsNS.Customer", "Customer")
+                        .WithMany("EventCustomers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KayakTourismWebApi.ModelsNS.Event", "Event")
+                        .WithMany("EventCustomers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -293,6 +340,16 @@ namespace KayakTourismWebApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Customer", b =>
+                {
+                    b.Navigation("EventCustomers");
+                });
+
+            modelBuilder.Entity("KayakTourismWebApi.ModelsNS.Event", b =>
+                {
+                    b.Navigation("EventCustomers");
                 });
 #pragma warning restore 612, 618
         }
