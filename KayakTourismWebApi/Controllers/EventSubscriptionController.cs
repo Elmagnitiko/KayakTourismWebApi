@@ -1,10 +1,10 @@
 ﻿using KayakTourismWebApi.DataNS;
+using KayakTourismWebApi.HelpersNS;
+using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -13,26 +13,31 @@ namespace KayakTourismWebApi.ControllersNS
     public class EventSubscriptionController : ControllerBase
     {
         private readonly UserManager<Customer> _userManager;
-        private readonly ApplicationDBContext _context;
-        public EventSubscriptionController(UserManager<Customer> userManager, ApplicationDBContext context)
+        private readonly IEventSubscription _eventSubscriptionRepository;
+        public EventSubscriptionController(UserManager<Customer> userManager, IEventSubscription eventSubsRepo)
         {
             _userManager = userManager;
-            _context = context;
+            _eventSubscriptionRepository = eventSubsRepo;
         }
 
         [HttpPost("apply/{eventId}")]
         [Authorize]
-        public async Task<IActionResult> ApplyForEvent([FromRoute]int eventId, string userId)
+        public async Task<IActionResult> ApplyForEvent([FromRoute]int eventId)
         {
-            //var userId = _userManager.GetUserId(User);
-            var customer = await _userManager.FindByIdAsync(userId);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var customerName = User.Getusername();
+            var customer = await _userManager.FindByNameAsync(customerName);
+
             if (customer == null)
             {
                 return Unauthorized("User not found.");
             }
 
-            var @event = await _context.Events.Include(e => e.EventCustomers)
-                                     .FirstOrDefaultAsync(e => e.Id == eventId);
+            var @event = await _eventSubscriptionRepository.GetByIdAsync(eventId);
             if (@event == null)
             {
                 return NotFound("Event not found.");
@@ -40,20 +45,28 @@ namespace KayakTourismWebApi.ControllersNS
 
             if (@event.EventCustomers.Count >= 8)
             {
-                @event.IsRegistrationOpenedInt = 0; // close registration
-                await _context.SaveChangesAsync();
+                var closeEventResult = await _eventSubscriptionRepository.CloseRegistrationAsync(eventId);
+                if(closeEventResult == null)
+                {
+                    return NotFound("Event not found.");
+                }
                 return BadRequest("Registration is closed for this event.");
             }
 
-            @event.EventCustomers.Add(new EventCustomer { EventId = @event.Id, CustomerId = customer.Id });
-    
-            if (@event.EventCustomers.Count >= 8)
+            var isAlreadySubscribed = @event.EventCustomers.Exists(ec => ec.CustomerId == customer.Id);
+            if (isAlreadySubscribed)
             {
-                @event.IsRegistrationOpenedInt = 0; // close registration after adding new person
+                return BadRequest("User is already subscribed to this event.");
             }
 
-            await _context.SaveChangesAsync();
+            var eventSubscriptionResult = await _eventSubscriptionRepository.SubscribeToEventAsync(new EventCustomer { EventId = @event.Id, CustomerId = customer.Id }, eventId);
+
+            if (eventSubscriptionResult == null)
+            {
+                return NotFound("Event not found.");
+            }
+
             return Ok("Successfully applied for the event.");
+        }
     }
-}
 }

@@ -21,6 +21,8 @@ namespace KayakTourismWebApi.DatabaseServices
         public static void RegisterDataAccess(this IServiceCollection services)
         {
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEventSubscription, EventSubscriptionRepository>();
         }
+
     }
 }
