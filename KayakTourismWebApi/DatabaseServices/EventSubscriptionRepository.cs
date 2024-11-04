@@ -20,11 +20,28 @@ namespace KayakTourismWebApi.DatabaseServices
 
             var eventModel = await _context.Events
                 .FirstOrDefaultAsync(e => e.Id == eventId);
+
             if (eventModel == null) 
             {
                 return null;
             }
+
             eventModel.IsRegistrationOpenedInt = 0;
+            await _context.SaveChangesAsync();
+            return eventModel;
+        }
+
+        public async Task<Event?> OpenRegistrationAsync(int eventId)
+        {
+            var eventModel = await _context.Events
+                .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (eventModel == null)
+            {
+                return null;
+            }
+
+            eventModel.IsRegistrationOpenedInt = 1;
             await _context.SaveChangesAsync();
             return eventModel;
         }
@@ -54,6 +71,18 @@ namespace KayakTourismWebApi.DatabaseServices
 
             await _context.SaveChangesAsync();
             return eventModel;
+        }
+
+        public async Task<EventCustomer?> DeleteCustomerFromEvent(int eventId, string customerId)
+        {
+            var eventCustomer = await _context.EventCustomers.FirstOrDefaultAsync(ec => (ec.EventId == eventId && ec.CustomerId == customerId));
+            if(eventCustomer == null)
+            {
+                return null;
+            }
+            _context.EventCustomers.Remove(eventCustomer);
+            await _context.SaveChangesAsync();
+            return eventCustomer;
         }
     }
 }

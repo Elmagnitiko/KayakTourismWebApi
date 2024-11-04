@@ -29,8 +29,7 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var customerName = User.Getusername();
-            var customer = await _userManager.FindByNameAsync(customerName);
+            var customer = await GetCurrentCustomer();
 
             if (customer == null)
             {
@@ -43,30 +42,69 @@ namespace KayakTourismWebApi.ControllersNS
                 return NotFound("Event not found.");
             }
 
-            if (@event.EventCustomers.Count >= 8)
+            if (@event.IsRegistrationOpened && @event.EventCustomers.Count < 8)
             {
-                var closeEventResult = await _eventSubscriptionRepository.CloseRegistrationAsync(eventId);
-                if(closeEventResult == null)
+                var isAlreadySubscribed = @event.EventCustomers.Exists(ec => ec.CustomerId == customer.Id);
+                if (isAlreadySubscribed)
+                {
+                    return BadRequest("User is already subscribed to this event.");
+                }
+
+                var eventSubscriptionResult = await _eventSubscriptionRepository.SubscribeToEventAsync(new EventCustomer { EventId = @event.Id, CustomerId = customer.Id }, eventId);
+
+                if (eventSubscriptionResult == null)
                 {
                     return NotFound("Event not found.");
                 }
-                return BadRequest("Registration is closed for this event.");
+                return Ok("Successfully applied for the event.");
             }
+            
+            return BadRequest("Registration for this event is closed.");
+        }
 
-            var isAlreadySubscribed = @event.EventCustomers.Exists(ec => ec.CustomerId == customer.Id);
-            if (isAlreadySubscribed)
-            {
-                return BadRequest("User is already subscribed to this event.");
-            }
-
-            var eventSubscriptionResult = await _eventSubscriptionRepository.SubscribeToEventAsync(new EventCustomer { EventId = @event.Id, CustomerId = customer.Id }, eventId);
-
-            if (eventSubscriptionResult == null)
+        [HttpPost("closeRegistration/{eventId}")]
+        [Authorize]
+        //[Authorize(Roles="Moderator")]
+        public async Task<IActionResult> CloseRegistration([FromRoute] int eventId)
+        {
+            var closeEventResult = await _eventSubscriptionRepository.CloseRegistrationAsync(eventId);
+            if (closeEventResult == null)
             {
                 return NotFound("Event not found.");
             }
+            return Ok("Registration closed.");
+        }
 
-            return Ok("Successfully applied for the event.");
+        [HttpPost("openRegistration/{eventId}")]
+        [Authorize]
+        //[Authorize(Roles="Moderator")]
+        public async Task<IActionResult> OpenRegistration([FromRoute] int eventId)
+        {
+            var openEventResult = await _eventSubscriptionRepository.OpenRegistrationAsync(eventId);
+            if (openEventResult == null)
+            {
+                return NotFound("Event not found.");
+            }
+            return Ok("Registration opened.");
+        }
+
+        [HttpPost("deleteCustomerFromEvent/{eventId}")]
+        [Authorize]
+        //[Authorize(Roles="Moderator")]
+        public async Task<IActionResult> DeleteCustomerFromEvent([FromRoute] int eventId, string customerId)
+        {
+            var deletingResult = await _eventSubscriptionRepository.DeleteCustomerFromEvent(eventId, customerId);
+            if (deletingResult == null)
+            {
+                return NotFound("Could not find this event with this customer");
+            }
+
+            return Ok("Customer is deleted from the event");
+        }
+
+        private async Task<Customer?> GetCurrentCustomer()
+        {
+            return await _userManager.FindByNameAsync(User.GetUsername());
         }
     }
 }
