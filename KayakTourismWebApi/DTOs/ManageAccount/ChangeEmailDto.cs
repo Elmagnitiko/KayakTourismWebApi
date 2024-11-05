@@ -8,7 +8,5 @@ namespace KayakTourismWebApi.DTOs.ManageAccount
         [EmailAddress(ErrorMessage = "Incorrect email address.")]
         [Display(Name = "Email")]
         public string? Email { get; set; }
-
-        public string? Id { get; set; }
     }
 }

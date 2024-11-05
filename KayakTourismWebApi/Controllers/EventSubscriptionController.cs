@@ -20,7 +20,7 @@ namespace KayakTourismWebApi.ControllersNS
             _eventSubscriptionRepository = eventSubsRepo;
         }
 
-        [HttpPost("apply/{eventId}")]
+        [HttpPost("apply/{eventId:int}")]
         [Authorize]
         public async Task<IActionResult> ApplyForEvent([FromRoute]int eventId)
         {
@@ -29,7 +29,8 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var customer = await GetCurrentCustomer();
+            var customerId = _userManager.GetUserId(User);
+            var customer = await _userManager.FindByIdAsync(customerId);
 
             if (customer == null)
             {
@@ -62,7 +63,7 @@ namespace KayakTourismWebApi.ControllersNS
             return BadRequest("Registration for this event is closed.");
         }
 
-        [HttpPost("closeRegistration/{eventId}")]
+        [HttpPost("closeRegistration/{eventId:int}")]
         [Authorize]
         //[Authorize(Roles="Moderator")]
         public async Task<IActionResult> CloseRegistration([FromRoute] int eventId)
@@ -88,7 +89,7 @@ namespace KayakTourismWebApi.ControllersNS
             return Ok("Registration opened.");
         }
 
-        [HttpPost("deleteCustomerFromEvent/{eventId}")]
+        [HttpPost("deleteCustomerFromEvent/{eventId:int}")]
         [Authorize]
         //[Authorize(Roles="Moderator")]
         public async Task<IActionResult> DeleteCustomerFromEvent([FromRoute] int eventId, string customerId)
@@ -100,11 +101,6 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             return Ok("Customer is deleted from the event");
-        }
-
-        private async Task<Customer?> GetCurrentCustomer()
-        {
-            return await _userManager.FindByNameAsync(User.GetUsername());
         }
     }
 }

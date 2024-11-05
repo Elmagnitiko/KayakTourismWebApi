@@ -1,5 +1,6 @@
 using KayakTourismWebApi.DatabaseServices;
 using KayakTourismWebApi.ServiceExtensionsNS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 
@@ -11,13 +12,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Demo API", 
+        Version = "v1" 
+    });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
         Description = "Please enter a valid token",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
+        //Type = SecuritySchemeType.ApiKey,
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
@@ -36,8 +42,6 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
-
-builder.Services.AddMemoryCache(); // move to the services extensions
 
 ConfigureServices(builder.Services, builder.Configuration);
 
@@ -67,5 +71,4 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.ConfigureJwtAuthentication(config);
     services.ConfigureTokenService();
     services.ConfigureEmailSender(config);
-    services.ConfigureTwoFactorAuthenticationService();
 }

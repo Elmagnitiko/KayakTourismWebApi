@@ -1,5 +1,6 @@
 ﻿using KayakTourismWebApi.DTOs.ManageAccount;
 using KayakTourismWebApi.DTOs.ManageAccountNS;
+using KayakTourismWebApi.HelpersNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -34,20 +35,19 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = await _userManager.FindByIdAsync(model.CustomerId);
+            var customerId = _userManager.GetUserId(User);
+            var customer = await _userManager.FindByIdAsync(customerId);
+
             if (customer == null)
             {
                 return Unauthorized("First, log in to your account");
             }
-
             var result = await _userManager.ChangePasswordAsync(customer, model.OldPassword, model.NewPassword);
-            
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(customer, isPersistent: true);
                 return Ok("Password changed successfully.");
             }
-            
             return BadRequest("Something went wrong");
         }
 
@@ -60,8 +60,8 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = await _userManager.FindByIdAsync(model.Id);
-            
+            var customerId = _userManager.GetUserId(User);
+            var customer = await _userManager.FindByIdAsync(customerId);
             if (customer == null)
             {
                 return Unauthorized("First, log in to your account");
@@ -89,17 +89,17 @@ namespace KayakTourismWebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("confirmNewEmail")]
-        public async Task<IActionResult> ConfirmNewEmail(string userId, string token, string newEmail)
+        public async Task<IActionResult> ConfirmNewEmail(string customerId, string token, string newEmail)
         {
-            if (userId == null || token == null || newEmail == null)
+            if (customerId == null || token == null || newEmail == null)
             {
                 return BadRequest("Email confirmation error.");
             }
 
-            var customer = await _userManager.FindByIdAsync(userId);
+            var customer = await _userManager.FindByIdAsync(customerId);
             if (customer == null)
             {
-                return NotFound($"Can not find a user with ID '{userId}'.");
+                return NotFound($"Can not find a customer with ID '{customerId}'.");
             }
 
             var result = await _userManager.ChangeEmailAsync(customer, newEmail, token);

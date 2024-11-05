@@ -7,10 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace KayakTourismWebApi.ControllersNS
 {
@@ -22,19 +19,16 @@ namespace KayakTourismWebApi.ControllersNS
         private readonly ITokenService _tokenService;
         private readonly SignInManager<Customer> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly ITwoFactorAuthenticationService _twoFactorAuthServ;
 
         public AccountController(UserManager<Customer> userManager, 
             ITokenService tokenService, 
             SignInManager<Customer> signInManager,
-            IEmailSender emailSender,
-            ITwoFactorAuthenticationService twoFactorAuthService)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _twoFactorAuthServ = twoFactorAuthService;
         }
 
         [AllowAnonymous]
@@ -131,16 +125,16 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            var customer = await _userManager.FindByEmailAsync(model.Email);
+            if (customer == null || !await _userManager.CheckPasswordAsync(customer, model.Password))
             {
                 return Unauthorized("Invalid email or password.");
             }
 
             await _signInManager.SignOutAsync();
-            await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent:true, lockoutOnFailure:false);
+            await _signInManager.PasswordSignInAsync(customer, model.Password, isPersistent:true, lockoutOnFailure:false);
             
-            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var code = await _userManager.GenerateTwoFactorTokenAsync(customer, "Email");
             await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}"); //TODO timer between sending emails
 
             return Ok("Code sent to email.");
@@ -230,13 +224,13 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            var customer = await _userManager.FindByEmailAsync(model.Email);
+            if (customer == null || !(await _userManager.IsEmailConfirmedAsync(customer)))
             {
                 return NotFound("User with this email doesn't exist.");
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(customer);
 
             var callbackUrl = Url.Action(
                 nameof(AccountController.ResetPassword),

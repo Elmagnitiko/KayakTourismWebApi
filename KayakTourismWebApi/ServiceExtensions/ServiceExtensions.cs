@@ -34,16 +34,7 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
 
         public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme =
-                options.DefaultChallengeScheme =
-                options.DefaultForbidScheme =
-                options.DefaultScheme =
-                options.DefaultSignInScheme =
-                options.DefaultSignOutScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-            })
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -53,6 +44,7 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                     ValidateAudience = true,
                     ValidAudience = configuration["JWT:Audience"],
                     ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
                 };
             });
@@ -82,11 +74,6 @@ namespace KayakTourismWebApi.ServiceExtensionsNS
                     configuration["EmailSettings:SmtpUser"],
                     configuration["EmailSettings:SmtpPass"]
                 ));
-        }
-
-        public static void ConfigureTwoFactorAuthenticationService(this IServiceCollection services)
-        {
-            services.AddTransient<ITwoFactorAuthenticationService, TwoFactorAuthenticationService>();
         }
     }
 }
