@@ -84,5 +84,17 @@ namespace KayakTourismWebApi.DatabaseServices
             await _context.SaveChangesAsync();
             return eventCustomer;
         }
+
+        public async Task<Customer[]> GetAllAppliedCustomersAsync(int eventId)
+        {
+            var customers = await _context.EventCustomers
+                .Where(ec => ec.EventId == eventId)
+                .Include(ec => ec.Customer)
+                .Select(ec => ec.Customer)
+                .ToArrayAsync();
+                
+            return customers;
+
+        }
     }
 }

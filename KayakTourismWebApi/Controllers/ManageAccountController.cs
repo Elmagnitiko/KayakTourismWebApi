@@ -35,8 +35,7 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customerId = _userManager.GetUserId(User);
-            var customer = await _userManager.FindByIdAsync(customerId);
+            var customer = await _userManager.GetUserAsync(HttpContext.User);
 
             if (customer == null)
             {
@@ -60,8 +59,7 @@ namespace KayakTourismWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customerId = _userManager.GetUserId(User);
-            var customer = await _userManager.FindByIdAsync(customerId);
+            var customer = await _userManager.GetUserAsync(HttpContext.User);
             if (customer == null)
             {
                 return Unauthorized("First, log in to your account");
@@ -72,8 +70,8 @@ namespace KayakTourismWebApi.Controllers
                 nameof(ConfirmNewEmail),
                 "ManageAccount",
                 new 
-                { 
-                    userId = customer.Id, 
+                {
+                    customerId = customer.Id, 
                     token = token, 
                     newEmail = model.Email 
                 },

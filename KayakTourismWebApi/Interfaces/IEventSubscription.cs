@@ -10,5 +10,6 @@ namespace KayakTourismWebApi.InterfacesNS
         Task<Event?> SubscribeToEventAsync(EventCustomer eventCustomer, int eventId);
         Task<Event?> OpenRegistrationAsync(int eventId);
         Task<EventCustomer?> DeleteCustomerFromEvent(int eventId, string customerId);
+        Task<Customer[]> GetAllAppliedCustomersAsync(int eventId);
     }
 }

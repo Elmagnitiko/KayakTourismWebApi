@@ -21,7 +21,8 @@ namespace KayakTourismWebApi.TokenServiceNS
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Email, customer.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, customer.Id.ToString()),
+                //new Claim(JwtRegisteredClaimNames.GivenName, customer.UserName),
+                new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()),
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

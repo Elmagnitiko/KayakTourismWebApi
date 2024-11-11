@@ -29,9 +29,7 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var customerId = _userManager.GetUserId(User);
-            var customer = await _userManager.FindByIdAsync(customerId);
-
+            var customer = await _userManager.GetUserAsync(HttpContext.User);
             if (customer == null)
             {
                 return Unauthorized("User not found.");
@@ -101,6 +99,19 @@ namespace KayakTourismWebApi.ControllersNS
             }
 
             return Ok("Customer is deleted from the event");
+        }
+
+        [HttpPost("getAllAppliedCustomers/{eventId:int}")]
+        [Authorize]
+        //[Authorize(Roles="Moderator")]
+        public async Task<IActionResult> GetAllAppliedCustomers([FromRoute] int eventId)
+        {
+            var appliedCustomers = await _eventSubscriptionRepository.GetAllAppliedCustomersAsync(eventId);
+            if(appliedCustomers == null)
+            {
+                return NotFound("No people applied to this event.");
+            }
+            return Ok(appliedCustomers);
         }
     }
 }
