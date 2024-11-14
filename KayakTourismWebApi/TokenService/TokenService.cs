@@ -1,9 +1,11 @@
 ﻿using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Linq;
 
 namespace KayakTourismWebApi.TokenServiceNS
 {
@@ -16,14 +18,16 @@ namespace KayakTourismWebApi.TokenServiceNS
             _config = config;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
         }
-        public string CreateToken(Customer customer)
+        public async Task<string> CreateToken(Customer customer, UserManager<Customer> userManager)
         {
-            var claims = new[]
+            var claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Email, customer.Email),
-                //new Claim(JwtRegisteredClaimNames.GivenName, customer.UserName),
                 new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()),
             };
+
+            var roles = await userManager.GetRolesAsync(customer); 
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDescriptor = new SecurityTokenDescriptor

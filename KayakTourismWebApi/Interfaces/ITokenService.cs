@@ -1,9 +1,10 @@
 ﻿using KayakTourismWebApi.ModelsNS;
+using Microsoft.AspNetCore.Identity;
 
 namespace KayakTourismWebApi.InterfacesNS
 {
     public interface ITokenService
     {
-        string CreateToken(Customer customer);
+        Task <string> CreateToken(Customer customer, UserManager<Customer> userManager);
     }
 }

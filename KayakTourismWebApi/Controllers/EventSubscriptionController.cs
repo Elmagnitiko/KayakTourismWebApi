@@ -62,8 +62,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("closeRegistration/{eventId:int}")]
-        [Authorize]
-        //[Authorize(Roles="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> CloseRegistration([FromRoute] int eventId)
         {
             var closeEventResult = await _eventSubscriptionRepository.CloseRegistrationAsync(eventId);
@@ -75,8 +74,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("openRegistration/{eventId}")]
-        [Authorize]
-        //[Authorize(Roles="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> OpenRegistration([FromRoute] int eventId)
         {
             var openEventResult = await _eventSubscriptionRepository.OpenRegistrationAsync(eventId);
@@ -88,8 +86,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("deleteCustomerFromEvent/{eventId:int}")]
-        [Authorize]
-        //[Authorize(Roles="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> DeleteCustomerFromEvent([FromRoute] int eventId, string customerId)
         {
             var deletingResult = await _eventSubscriptionRepository.DeleteCustomerFromEvent(eventId, customerId);
@@ -102,8 +99,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("getAllAppliedCustomers/{eventId:int}")]
-        [Authorize]
-        //[Authorize(Roles="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> GetAllAppliedCustomers([FromRoute] int eventId)
         {
             var appliedCustomers = await _eventSubscriptionRepository.GetAllAppliedCustomersAsync(eventId);

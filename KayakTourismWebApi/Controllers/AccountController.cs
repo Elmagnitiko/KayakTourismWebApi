@@ -113,7 +113,7 @@ namespace KayakTourismWebApi.ControllersNS
                 Username = customer.UserName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                Token = _tokenService.CreateToken(customer)
+                Token = await _tokenService.CreateToken(customer, _userManager)
             });
         }
 
@@ -166,7 +166,7 @@ namespace KayakTourismWebApi.ControllersNS
                 Username = customer.UserName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                Token = _tokenService.CreateToken(customer)
+                Token = await _tokenService.CreateToken(customer, _userManager)
             });
         }
 

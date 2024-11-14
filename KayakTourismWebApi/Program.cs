@@ -1,4 +1,5 @@
 using KayakTourismWebApi.DatabaseServices;
+using KayakTourismWebApi.ServiceExtensions;
 using KayakTourismWebApi.ServiceExtensionsNS;
 using Microsoft.OpenApi.Models;
 
@@ -53,6 +54,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+await app.SeedDataAsync();
 
 app.MapControllers();
 
