@@ -1,8 +1,8 @@
-﻿using KayakTourismWebApi.Data;
+﻿using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Identity;
 
-namespace KayakTourismWebApi.ServiceExtensions
+namespace KayakTourismWebApi.ServiceExtensionsNS
 {
     public static class ApplicationBuilderExtensions 
     { 

@@ -1,9 +1,8 @@
 ﻿using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.InterfacesNS;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
-namespace KayakTourismWebApi.DatabaseServices
+namespace KayakTourismWebApi.DatabaseServicesNS
 {
     public static class DataAccessService
     {

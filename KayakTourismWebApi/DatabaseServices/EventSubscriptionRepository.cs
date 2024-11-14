@@ -1,11 +1,9 @@
 ﻿using KayakTourismWebApi.DataNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
-namespace KayakTourismWebApi.DatabaseServices
+namespace KayakTourismWebApi.DatabaseServicesNS
 {
     public class EventSubscriptionRepository : IEventSubscription
     {

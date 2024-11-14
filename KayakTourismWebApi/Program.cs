@@ -1,5 +1,4 @@
-using KayakTourismWebApi.DatabaseServices;
-using KayakTourismWebApi.ServiceExtensions;
+using KayakTourismWebApi.DatabaseServicesNS;
 using KayakTourismWebApi.ServiceExtensionsNS;
 using Microsoft.OpenApi.Models;
 
@@ -59,7 +58,7 @@ await app.SeedDataAsync();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
 
 static void ConfigureServices(IServiceCollection services, IConfiguration config)
 {

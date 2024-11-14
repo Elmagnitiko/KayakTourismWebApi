@@ -1,4 +1,4 @@
-﻿namespace KayakTourismWebApi.DTOs.Event
+﻿namespace KayakTourismWebApi.DTOs.EventNS
 {
     public class EventDto
     {

@@ -1,5 +1,4 @@
 ﻿using KayakTourismWebApi.ModelsNS;
-using Microsoft.AspNetCore.Mvc;
 
 namespace KayakTourismWebApi.InterfacesNS
 {

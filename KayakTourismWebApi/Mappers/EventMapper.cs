@@ -1,6 +1,5 @@
-﻿using KayakTourismWebApi.DTOs.Event;
+﻿using KayakTourismWebApi.DTOs.EventNS;
 using KayakTourismWebApi.ModelsNS;
-using System.Diagnostics.Eventing.Reader;
 
 namespace KayakTourismWebApi.MappersNS
 {

@@ -1,6 +1,4 @@
-﻿using KayakTourismWebApi.Controllers;
-using KayakTourismWebApi.DTOs.Account;
-using KayakTourismWebApi.DTOs.AccountNS;
+﻿using KayakTourismWebApi.DTOs.AccountNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
@@ -84,7 +82,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto) // do i really need this method? yes - give the option to turn off 2fa or combine them in one method with "if (result.RequiresTwoFactor)"
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             if(!ModelState.IsValid || loginDto == null)
             {
@@ -117,6 +115,7 @@ namespace KayakTourismWebApi.ControllersNS
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("login2fa")]
         public async Task<IActionResult> Login2fa([FromBody] LoginDto model)
         {
@@ -135,7 +134,7 @@ namespace KayakTourismWebApi.ControllersNS
             await _signInManager.PasswordSignInAsync(customer, model.Password, isPersistent:true, lockoutOnFailure:false);
             
             var code = await _userManager.GenerateTwoFactorTokenAsync(customer, "Email");
-            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}"); //TODO timer between sending emails
+            await _emailSender.SendEmailAsync(model.Email, "Your authentication code", $"Your code is {code}");
 
             return Ok("Code sent to email.");
         }
@@ -248,7 +247,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpGet("resetPassword")]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string token, string email)
         {
             var model = new ResetPasswordDto { Token = token, Email = email };

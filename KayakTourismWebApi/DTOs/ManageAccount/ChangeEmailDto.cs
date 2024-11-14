@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KayakTourismWebApi.DTOs.ManageAccount
+namespace KayakTourismWebApi.DTOs.ManageAccountNS
 {
     public class ChangeEmailDto
     {

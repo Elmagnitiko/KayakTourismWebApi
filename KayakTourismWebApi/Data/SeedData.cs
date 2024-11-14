@@ -2,34 +2,33 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace KayakTourismWebApi.Data
+namespace KayakTourismWebApi.DataNS
 {
     public static class SeedData
     {
         public static async Task InitializeAsync(IServiceProvider serviceProvider, UserManager<Customer> userManager)
         {
-            //var userManager = services.GetRequiredService<UserManager<Customer>>();
             await AddModeratorRights(userManager);
         }
 
         private static async Task AddModeratorRights(UserManager<Customer> userManager)
         {
-            var moderatorExists = await userManager.Users.AnyAsync(x => x.Email == "moderator@moderator.local");
+            const string moderatorEmail = "moderator@moderator.local";
+            const string moderatorPassword = "Moderator111!";
 
-            const string email = "moderator@moderator.local";
-            const string password = "Moderator111!";
+            var moderatorExists = await userManager.Users.AnyAsync(x => x.Email == moderatorEmail);
 
             if (!moderatorExists)
             {
                 var moderator = new Customer
                 {
-                    Email = email,
-                    UserName = email,
+                    Email = moderatorEmail,
+                    UserName = moderatorEmail,
                     EmailConfirmed = true,
                     TwoFactorEnabled = false,
                 };
 
-                var createModeratorResuls = await userManager.CreateAsync(moderator, password);
+                var createModeratorResuls = await userManager.CreateAsync(moderator, moderatorPassword);
 
                 if (createModeratorResuls.Succeeded)
                 {

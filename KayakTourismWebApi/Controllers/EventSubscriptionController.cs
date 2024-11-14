@@ -1,6 +1,4 @@
-﻿using KayakTourismWebApi.DataNS;
-using KayakTourismWebApi.HelpersNS;
-using KayakTourismWebApi.InterfacesNS;
+﻿using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +19,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("apply/{eventId:int}")]
-        [Authorize]
+        [Authorize(Roles = Constants.CustomerRole)]
         public async Task<IActionResult> ApplyForEvent([FromRoute]int eventId)
         {
             if (!ModelState.IsValid)

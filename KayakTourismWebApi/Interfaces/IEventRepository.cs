@@ -1,4 +1,4 @@
-﻿using KayakTourismWebApi.DTOs.Event;
+﻿using KayakTourismWebApi.DTOs.EventNS;
 using KayakTourismWebApi.ModelsNS;
 
 namespace KayakTourismWebApi.InterfacesNS

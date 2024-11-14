@@ -1,11 +1,11 @@
 ﻿using KayakTourismWebApi.DataNS;
-using KayakTourismWebApi.DTOs.Event;
+using KayakTourismWebApi.DTOs.EventNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
 using KayakTourismWebApi.ModelsNS;
 using Microsoft.EntityFrameworkCore;
 
-namespace KayakTourismWebApi.DatabaseServices
+namespace KayakTourismWebApi.DatabaseServicesNS
 {
     public class EventRepository : IEventRepository
     {

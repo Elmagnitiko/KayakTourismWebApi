@@ -1,7 +1,8 @@
-﻿using KayakTourismWebApi.DTOs.Event;
+﻿using KayakTourismWebApi.DTOs.EventNS;
 using KayakTourismWebApi.InterfacesNS;
 using KayakTourismWebApi.MappersNS;
 using KayakTourismWebApi.ModelsNS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KayakTourismWebApi.ControllersNS
@@ -17,21 +18,22 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpGet("all")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject queryObj)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); 
+                return BadRequest(ModelState);
             }
 
             var events = await _eventRepo.GetAllAsync(queryObj);
-            //null check
             var eventsDtos = events.Select(e => e.ToEventDto());
 
             return Ok(eventsDtos);
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById([FromRoute]int id)
         {
             if (!ModelState.IsValid)
@@ -50,8 +52,7 @@ namespace KayakTourismWebApi.ControllersNS
         }
 
         [HttpPost("createEvent")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Role="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto eventDto)
         {
             if (!ModelState.IsValid)
@@ -66,8 +67,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpPut]
         [Route("{id:int}")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Role="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] UpdateEventDto eventDto)
         {
             if (!ModelState.IsValid)
@@ -87,8 +87,7 @@ namespace KayakTourismWebApi.ControllersNS
 
         [HttpDelete]
         [Route("{id:int}")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Role="Moderator")]
+        [Authorize(Roles = Constants.ModeratorRole)]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -105,8 +104,5 @@ namespace KayakTourismWebApi.ControllersNS
 
             return NoContent(); 
         }
-
-
-
     }
 }
