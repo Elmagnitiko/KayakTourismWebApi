@@ -4,11 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KayakTourismWebApi", "KayakTourismWebApi\KayakTourismWebApi.csproj", "{BB56600C-5FDB-4D84-85F5-6A07C5455D59}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3488B4DC-8015-48E4-A484-A941956D37B6} = {3488B4DC-8015-48E4-A484-A941956D37B6}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kayak.Database", "Kayak.Database\Kayak.Database.csproj", "{3488B4DC-8015-48E4-A484-A941956D37B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +15,6 @@ Global
 		{BB56600C-5FDB-4D84-85F5-6A07C5455D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB56600C-5FDB-4D84-85F5-6A07C5455D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB56600C-5FDB-4D84-85F5-6A07C5455D59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3488B4DC-8015-48E4-A484-A941956D37B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3488B4DC-8015-48E4-A484-A941956D37B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3488B4DC-8015-48E4-A484-A941956D37B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3488B4DC-8015-48E4-A484-A941956D37B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
