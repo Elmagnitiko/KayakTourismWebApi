@@ -1,7 +1,7 @@
-﻿using KayakTourismWebApi.DataNS;
+﻿using KayakData.DataNS;
+using KayakData.ModelsNS;
 using KayakTourismWebApi.HelpersNS;
 using KayakTourismWebApi.InterfacesNS;
-using KayakTourismWebApi.ModelsNS;
 using KayakTourismWebApi.TokenServiceNS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

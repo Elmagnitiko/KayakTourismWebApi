@@ -1,11 +1,10 @@
 ﻿using KayakTourismWebApi.InterfacesNS;
-using KayakTourismWebApi.ModelsNS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Linq;
+using KayakData.ModelsNS;
 
 namespace KayakTourismWebApi.TokenServiceNS
 {

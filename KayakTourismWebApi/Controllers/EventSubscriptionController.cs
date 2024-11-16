@@ -1,5 +1,6 @@
-﻿using KayakTourismWebApi.InterfacesNS;
-using KayakTourismWebApi.ModelsNS;
+﻿using KayakData;
+using KayakData.InterfacesNS;
+using KayakData.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

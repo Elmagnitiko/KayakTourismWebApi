@@ -1,4 +1,4 @@
-using KayakTourismWebApi.DatabaseServicesNS;
+using KayakData.DatabaseServicesNS;
 using KayakTourismWebApi.ServiceExtensionsNS;
 using Microsoft.OpenApi.Models;
 

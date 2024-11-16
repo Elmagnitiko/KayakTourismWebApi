@@ -1,4 +1,4 @@
-﻿using KayakTourismWebApi.ModelsNS;
+﻿using KayakData.ModelsNS;
 using Microsoft.AspNetCore.Identity;
 
 namespace KayakTourismWebApi.InterfacesNS

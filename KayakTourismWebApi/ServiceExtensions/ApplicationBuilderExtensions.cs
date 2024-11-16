@@ -1,5 +1,5 @@
-﻿using KayakTourismWebApi.DataNS;
-using KayakTourismWebApi.ModelsNS;
+﻿using KayakData.DataNS;
+using KayakData.ModelsNS;
 using Microsoft.AspNetCore.Identity;
 
 namespace KayakTourismWebApi.ServiceExtensionsNS

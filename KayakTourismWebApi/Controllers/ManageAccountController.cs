@@ -1,5 +1,5 @@
-﻿using KayakTourismWebApi.DTOs.ManageAccountNS;
-using KayakTourismWebApi.ModelsNS;
+﻿using KayakData.DTOs.ManageAccountNS;
+using KayakData.ModelsNS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
