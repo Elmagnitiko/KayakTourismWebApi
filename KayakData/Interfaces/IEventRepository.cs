@@ -5,11 +5,12 @@ namespace KayakData.InterfacesNS
 {
     public interface IEventRepository
     {
-        Task<Event[]> GetAllAsync(QueryObject queryObj);
-        Task<Event?> GetByIdAsync(int id);
-        Task<Event> CreateEventAsync(Event eventModel);
-        Task<Event?> UpdateEventAsync(int id, UpdateEventDto eventModel);
-        Task<Event?> DeleteEventAsync(int id);
-        Task<bool> IsEventExist(int id);
+        //public Task<Event[]> GetAllAsync(QueryObject queryObj);
+        public Task<List<Event>> GetAllAsync(QueryObject queryObj);
+        public Task<Event?> GetByIdAsync(int id);
+        public Task<Event> CreateEventAsync(Event eventModel);
+        public Task<Event?> UpdateEventAsync(int id, UpdateEventDto eventModel);
+        public Task<Event?> DeleteEventAsync(int id);
+        public Task<bool> IsEventExist(int id);
     }
 }

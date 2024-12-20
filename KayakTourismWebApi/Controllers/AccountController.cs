@@ -90,7 +90,8 @@ namespace KayakTourismWebApi.ControllersNS
                 return BadRequest(ModelState);
             }
 
-            var customer = await _userManager.Users.FirstOrDefaultAsync(x =>  x.Email == loginDto.Email.ToLower());
+            //var customer = await _userManager.Users.FirstOrDefaultAsync(x =>  x.Email == loginDto.Email.ToLower());
+            var customer = await _userManager.FindByEmailAsync(loginDto.Email);
             if (customer == null)
             {
                 return Unauthorized("Invalid email or password");
@@ -128,7 +129,7 @@ namespace KayakTourismWebApi.ControllersNS
             var customer = await _userManager.FindByEmailAsync(model.Email);
             if (customer == null || !await _userManager.CheckPasswordAsync(customer, model.Password))
             {
-                return Unauthorized("Invalid email or password.");
+                return Unauthorized( "Invalid email or password.");
             }
 
             await _signInManager.SignOutAsync();

@@ -36,7 +36,8 @@ namespace KayakData.DatabaseServicesNS
             return eventModel;
         }
 
-        public async Task<Event[]> GetAllAsync(QueryObject queryObj)
+        //public async Task<Event[]> GetAllAsync(QueryObject queryObj)
+        public async Task<List<Event>> GetAllAsync(QueryObject queryObj)
         {
             var skipNumbers = (queryObj.PageNumber - 1) * queryObj.PageSize;
 
@@ -44,7 +45,7 @@ namespace KayakData.DatabaseServicesNS
                 .OrderBy(e => e.EventStarts)
                 .Skip(skipNumbers)
                 .Take(queryObj.PageSize)
-                .ToArrayAsync();
+                .ToListAsync();
         }
 
         public async Task<Event?> GetByIdAsync(int id)

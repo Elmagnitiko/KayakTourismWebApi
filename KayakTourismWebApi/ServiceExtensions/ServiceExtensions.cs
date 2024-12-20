@@ -6,6 +6,7 @@ using KayakTourismWebApi.TokenServiceNS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace KayakTourismWebApi.ServiceExtensionsNS

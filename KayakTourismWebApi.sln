@@ -8,7 +8,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KayakTourismWebApi", "Kayak
 		{39DAEA75-BC73-4665-8CDB-A2B48E395F09} = {39DAEA75-BC73-4665-8CDB-A2B48E395F09}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakData", "KayakData\KayakData.csproj", "{39DAEA75-BC73-4665-8CDB-A2B48E395F09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KayakData", "KayakData\KayakData.csproj", "{39DAEA75-BC73-4665-8CDB-A2B48E395F09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakTourismWebApi.Tests", "KayakTourismWebApi.Tests\KayakTourismWebApi.Tests.csproj", "{EE30588C-AC2A-4B97-82C1-D80A8C93EA01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{39DAEA75-BC73-4665-8CDB-A2B48E395F09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39DAEA75-BC73-4665-8CDB-A2B48E395F09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39DAEA75-BC73-4665-8CDB-A2B48E395F09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE30588C-AC2A-4B97-82C1-D80A8C93EA01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE30588C-AC2A-4B97-82C1-D80A8C93EA01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE30588C-AC2A-4B97-82C1-D80A8C93EA01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE30588C-AC2A-4B97-82C1-D80A8C93EA01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

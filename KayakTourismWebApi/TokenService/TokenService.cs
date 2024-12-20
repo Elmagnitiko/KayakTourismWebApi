@@ -25,7 +25,7 @@ namespace KayakTourismWebApi.TokenServiceNS
                 new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()),
             };
 
-            var roles = await userManager.GetRolesAsync(customer); 
+            var roles = await userManager.GetRolesAsync(customer);
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -41,7 +41,7 @@ namespace KayakTourismWebApi.TokenServiceNS
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token); 
+            return tokenHandler.WriteToken(token);
         }
     }
 }
