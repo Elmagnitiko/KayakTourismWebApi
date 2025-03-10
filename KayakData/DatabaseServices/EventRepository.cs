@@ -36,7 +36,6 @@ namespace KayakData.DatabaseServicesNS
             return eventModel;
         }
 
-        //public async Task<Event[]> GetAllAsync(QueryObject queryObj)
         public async Task<List<Event>> GetAllAsync(QueryObject queryObj)
         {
             var skipNumbers = (queryObj.PageNumber - 1) * queryObj.PageSize;
@@ -74,10 +73,5 @@ namespace KayakData.DatabaseServicesNS
             throw new NotImplementedException();
         }
 
-        //private async Task<bool> Save()
-        //{
-        //    var saved = await _dbContext.SaveChangesAsync();
-        //    return saved > 0;
-        //}
     }
 }

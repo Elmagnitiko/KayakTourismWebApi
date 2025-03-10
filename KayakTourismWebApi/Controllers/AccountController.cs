@@ -89,8 +89,6 @@ namespace KayakTourismWebApi.ControllersNS
             {
                 return BadRequest(ModelState);
             }
-
-            //var customer = await _userManager.Users.FirstOrDefaultAsync(x =>  x.Email == loginDto.Email.ToLower());
             var customer = await _userManager.FindByEmailAsync(loginDto.Email);
             if (customer == null)
             {
@@ -107,6 +105,7 @@ namespace KayakTourismWebApi.ControllersNS
             {
                 return Unauthorized("Username or password is not correct");
             }
+
 
             return Ok(new NewCustomerDto
             {

@@ -5,7 +5,6 @@ namespace KayakData.InterfacesNS
 {
     public interface IEventRepository
     {
-        //public Task<Event[]> GetAllAsync(QueryObject queryObj);
         public Task<List<Event>> GetAllAsync(QueryObject queryObj);
         public Task<Event?> GetByIdAsync(int id);
         public Task<Event> CreateEventAsync(Event eventModel);
