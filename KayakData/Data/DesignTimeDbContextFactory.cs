@@ -8,10 +8,15 @@ namespace KayakData
     { 
         public ApplicationDBContext CreateDbContext(string[] args) 
         { 
-            var configuration = new ConfigurationBuilder().SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../KayakTourismWebApi")).AddJsonFile("appsettings.json").Build(); 
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../KayakTourismWebApi"))
+                .AddJsonFile("appsettings.json")
+                .Build();
+            
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDBContext>(); 
             var connectionString = configuration.GetConnectionString("DefaultConnection"); 
             optionsBuilder.UseSqlite(connectionString); 
+
             return new ApplicationDBContext(optionsBuilder.Options); 
         } 
     } 

@@ -22,7 +22,7 @@ namespace KayakTourismWebApi.ControllersNS
         public async Task<IActionResult> GetAll([FromQuery] QueryObject queryObj)
         {
             if (!ModelState.IsValid)
-            {
+            {   
                 return BadRequest(ModelState);
             }
 
